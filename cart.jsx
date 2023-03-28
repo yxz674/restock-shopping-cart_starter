@@ -93,26 +93,38 @@ const Products = (props) => {
   // Fetch Data
   const addToCart = (e) => {
     let name = e.target.name;
-    let item = items.filter((item) => item.name == name);
+    let item = items.filter((item) => item.name == name);//filter always return to an array
+    if (item[0].instock == 0) return;
+    item[0].instock = item[0].instock - 1;
     console.log(`add to Cart ${JSON.stringify(item)}`);
     setCart([...cart, ...item]);
     //doFetch(query);
   };
-  const deleteCartItem = (index) => {
-    let newCart = cart.filter((item, i) => index != i);
+  const deleteCartItem = (deleteIndex) => {
+    //this is the index in the cart not in the Product List
+    let newCart = cart.filter((item, i) => deleteIndex != i);
+    let target = cart.filter((item, index) => deleteIndex == index);
+    let newItems = items.map((item, index) => {
+      if (item.name == target[0].name) item.instock = item.instock + 1;
+      return items;
+    })
     setCart(newCart);
+    setItems(newItems);
   };
-  const photos = ["apple.png", "orange.png", "beans.png", "cabbage.png"];
 
+  //you can choose to use local photos png objects
+  const photos = ["apple.png", "orange.png", "beans.png", "cabbage.png"];
+  //Or you can choose to use online photo tool https://picsum.photos
   let list = items.map((item, index) => {
-    //let n = index + 1049;
-    //let url = "https://picsum.photos/id/" + n + "/50/50";
+    let n = index + 1049;
+    let picsumurl = "https://picsum.photos/id/" + n + "/50/50";
 
     return (
       <li key={index}>
-        <Image src={photos[index % 4]} width={70} roundedCircle></Image>
+        {/* <Image src={photos[index%4]} width={70} roundedCircle></Image> */}
+        <Image src={picsumurl} width={60} roundedCircle></Image>
         <Button variant="primary" size="large">
-          {item.name}:{item.cost}
+          {item.name}:${item.cost}-Stock={item.instock}
         </Button>
         <input name={item.name} type="submit" onClick={addToCart}></input>
       </li>
